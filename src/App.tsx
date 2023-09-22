@@ -32,6 +32,13 @@ function App() {
         multiple: false,
     };
 
+    const restart = () => {
+        setProgress(0);
+        setUpload('idle');
+        setError('');
+        setResults({} as Results);
+    }
+
     const {getRootProps, getInputProps, acceptedFiles} = useDropzone(opts);
 
     React.useEffect(() => {
@@ -229,8 +236,9 @@ function App() {
                                     })}</div>
                                 </div>
 
-                                <a href={"/"} className={"btn btn-primary"}>
-                                    <i className="fas fa-chevron-left"></i> Try Again</a>
+                                <button className={"btn btn-primary"} onClick={(e) => restart()}>
+                                    <i className="fas fa-chevron-left"></i> Try Again
+                                </button>
                             </div>
                         }
                     </div>
