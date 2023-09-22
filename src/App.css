@@ -1,38 +1,90 @@
-.App {
-  text-align: center;
+.header {
+    padding: 10px 0 0 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header a, .header h1 {
+    color: #000000;
+    text-decoration: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+a {
+    word-break: break-word;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.nav-area {
+    background-color: #0066ff;
+    margin-bottom: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-area a, .nav-area h1 {
+    color: #FFFFFF;
+    text-decoration: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Fira Sans", Helvetica, Arial, sans-serif;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+}
+
+.navbar {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.navbar .active .nav-link {
+    background-color: #FFFFFF;
+    color: #0066ff;
+}
+
+.navbar .navbar-nav .nav-link {
+    padding: 10px 20px;
+}
+
+.navbar-toggler {
+    font-size: 28px;
+}
+
+.navbar-toggler {
+    color: #FFFFFF;
+}
+
+@media (max-width: 991px) {
+    .navbar-collapse.show {
+        display: block;
+    }
+
+    .navbar-collapsing {
+        display: block;
+    }
+}
+
+.navbar-expand-lg {
+    margin: 0 -16px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+.dropzone {
+    display:flex;
+    justify-content: center;
+    flex-direction: column;
+    cursor:pointer;
+    align-items: center;
+    border: 2px dashed #0087F7;
+    border-radius: 5px;
+    background: white;
+    padding: 20px;
+    height: 200px;
+    text-align: center;
+}
+
+.error-panel {
+    display:flex;
+    align-items: center;
+    gap: 12px;
 }
