@@ -1,8 +1,8 @@
-import {OkType, SectionArgs} from "./Section";
+import {Detail, OkType, SectionArgs} from "./Section";
 
 type TableCellProps = {
     col: boolean | string,
-    value: string | OkType | string[],
+    value: Detail,
     loop: { index: number },
     args: SectionArgs
 };

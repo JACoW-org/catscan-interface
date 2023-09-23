@@ -1,12 +1,14 @@
 import React from "react";
+import {Rule} from "./Section";
 
 type TableHeadersProps = {
-    rules?: string[],
-    headers: string | boolean
+    headers?: string
+    rules?: { [key: string]: Rule; }
 };
 const TableHeader: React.FC<TableHeadersProps> = (props) => {
+    const firstRule = props.rules && Object.entries(props.rules)[0][1];
     return (<>
-        {(typeof props.headers === 'boolean') && !props.headers && props.rules !== undefined &&
+        {firstRule &&
             <thead>
             <tr>
                 <th rowSpan={2}>Text</th>
@@ -14,7 +16,7 @@ const TableHeader: React.FC<TableHeadersProps> = (props) => {
             </tr>
             <tr>
                 <th>Text Style Name</th>
-                {props.rules.map((rule: any, index: number) => {
+                {Object.keys(firstRule).map((rule) => {
                     return ['type', 'styles'].indexOf(rule) === -1 ? <th>{rule}</th> : null;
                 })}
             </tr>

@@ -1,12 +1,13 @@
 import React from "react";
 import Rules from "./Rules";
+import ExtraInfo from "./ExtraInfo";
 
 type OkType = true | false | 2;
 
 type ExtraInfoType = {
     columns?: string[]
-    headers: string
-    title: string,
+    headers?: string
+    title?: string,
     multi?: boolean
 };
 
@@ -31,7 +32,7 @@ type SectionProps = {
     rules: { [key: string]: Rule; }
     extra_rules: string[] | string
     help_info: string
-    details: Detail[]
+    details: { [key: string]: Detail}[]
     extra_info?: string | ExtraInfoType
     show_total?: boolean
 }
@@ -93,21 +94,11 @@ const Section: React.FC<SectionProps> = (props) => {
 
             <Rules rules={props.rules} extra_rules={props.extra_rules} title={props.title} />
 
-            {props.extra_info && typeof props.extra_info === 'string' &&
-                <div className="extra-jacow-info" dangerouslySetInnerHTML={{__html: props.extra_info}}></div>}
-
-            {props.extra_info && typeof props.extra_info !== 'string' &&
-                <details className="details-jacow">
-                    <summary className="details-summary-jacow">{props.extra_info.title} for {props.title}</summary>
-                    {/*{props.extra_info.multi &&*/}
-                    {/*    <div className={"mt-3"}><TableMulti data={props.details} columns={props.extra_info.columns} args={sectionArgs} headers={props.extra_info.headers} /></div>*/}
-                    {/*}*/}
-                </details>
-            }
+            {props.extra_info && <ExtraInfo title={props.title} extra_info={props.extra_info} show_total={props.show_total ?? false} details={props.details} ok={props.ok} args={sectionArgs} />}
         </div>
     );
 }
 
 export {columnHeaders};
-export type {SectionProps, OkType, SectionArgs, Rule, Detail};
+export type {SectionProps, OkType, SectionArgs, Rule, Detail, ExtraInfoType};
 export default Section;

@@ -1,41 +1,35 @@
-import react from 'react';
-import TableHeader from "./TableHeader";
+import {Detail, Rule, SectionArgs} from "./Section";
+import React from "react";
+import TableCell from "./TableCell";
 
 type TableRowProps = {
     id: number,
-    data: any
-    columns: any
-    args: any
-    rules?: string[],
-    headers: string | boolean
+    args: SectionArgs,
+    columns?: string[]
+    rules?: { [key: string]: Rule; }
+    data: { [key: string]: Detail}
 };
 
 const TableRow: React.FC<TableRowProps> = (props) => {
-
-    // <tr>
-    //     {% if rules %}
-    //     {% set rule_list = rules|first_value_in_dict %}
-    //     {{ make_cell('text', row['text'], loop, args) }}
-    //     {{ make_cell('style', row['style'], loop, args) }}
-    //     {% for rule, value in rule_list.items() %}
-    //     {% if rule not in ['type','styles'] %}
-    //     {% set value = row[rule] %}
-    //     {{ make_cell(rule, value, loop, args) }}
-    //     {% endif %}
-    //     {% endfor %}
-    //     {{ make_cell('style_ok', row['style_ok'], loop, args) }}
-    //     {% else %}
-    //     {% for col in columns %}
-    //     {% set value = row[col] %}
-    //     {% if col == 'id' %}
-    //     {% set value = id %}
-    //     {% endif %}
-    //     {{ make_cell(col, value, loop, args) }}
-    //     {% endfor %}
-    //     {% endif %}
-    // </tr>
+    const firstRule = props.rules && Object.entries(props.rules)[0][1];
     return (
         <tr>
+            {firstRule && <TableCell col="text" value={props.data.text} args={props.args} loop={{'index': props.id}} />}
+            {firstRule && <TableCell col="style" value={props.data.style} args={props.args} loop={{'index': props.id}} />}
+            {firstRule && Object.entries(firstRule).map((rule, index) => {
+                if (['type', 'styles'].indexOf(rule[0]) === -1) {
+                    return <TableCell key={index} col={rule[0]} value={props.data[rule[0]]} args={props.args} loop={{'index': props.id}} />
+                }
+                return null
+            })}
+            {firstRule && <TableCell col="style_ok" value={props.data.style_ok} args={props.args} loop={{'index': props.id}} />}
+            {!firstRule && props.columns && props.columns.map((col, index) => {
+                let value = props.data[col];
+                if (col === 'id') {
+                    value = props.id;
+                }
+                return <TableCell key={index} col={col} value={value} args={props.args} loop={{'index': props.id}} />
+            })}
         </tr>
     )
 }
