@@ -117,3 +117,8 @@ body {
     justify-content: space-between;
     gap: 8px;
 }
+
+.rule-table {
+    width: auto;
+    margin: 0 -8px;
+}

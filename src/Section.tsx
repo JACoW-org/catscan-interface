@@ -10,7 +10,7 @@ type Rule = {
     space_after: number,
     space_before: number,
     type: string
-    styles: string[]
+    styles: { [key: string]: string; }
 };
 
 type Detail = {
@@ -25,8 +25,8 @@ type Detail = {
     italic?: boolean
     left_indent: string
     original_text: string
-    space_after: number
-    space_before?: number
+    space_after: number | [string | number]
+    space_before?: number | [string | number]
     style: string
     style_ok: OkType
     text: string
@@ -34,6 +34,11 @@ type Detail = {
     url: string
 }
 
+type ExtraIntoType = {
+    columns: string[]
+    headers: string
+    title: string
+};
 
 type SectionProps = {
     anchor: string
@@ -43,10 +48,11 @@ type SectionProps = {
     help_info: string
     rules: { [key: string]: Rule; }
     details: { [key: string]: Detail; }
+    extra_info?: string | ExtraIntoType
 }
 
 const Section: React.FC<SectionProps> = (props) => {
-    const columnHeaders: {[key: string] : string} = {
+    const columnHeaders: { [key: string]: string } = {
         'alignment': 'Alignment',
         'font_size': 'Font Size',
         'all_caps': 'All Caps',
@@ -81,13 +87,12 @@ const Section: React.FC<SectionProps> = (props) => {
                         </div>
                     }
                     {props.rules &&
-                        <table className="table is-bordered is-fullwidth">
+                        <table className="table rule-table">
                             <thead>
                             <tr>
                                 <th>Type</th>
                                 <th>Details</th>
                                 {props.rules[Object.keys(props.rules)[0]] && Object.keys(props.rules[Object.keys(props.rules)[0]]).map((rule) => {
-                                    console.log("Rule: ", rule);
                                     if (rule !== 'type' && rule !== 'styles') {
                                         return (<th key={rule}>{columnHeaders[rule]}</th>)
                                     }
@@ -95,107 +100,40 @@ const Section: React.FC<SectionProps> = (props) => {
                                 })}
                             </tr>
                             </thead>
-                            {/*<tbody>*/}
-                            {/*    {Object.entries(props.rules).map((rule) => {*/}
-                            {/*        return (<tr key={rule[0]}>*/}
-                            {/*            <td>{rule[1].type}</td>*/}
-                            {/*            <td>'{rule[1].styles}' or equivalent style</td>*/}
-                            {/*            {Object.entries(rule).map((rule) => {*/}
-                            {/*                if (rule[0] !== 'type' && rule[0] !== 'styles') {*/}
-                            {/*                    return (<td key={rule[0]}>{rule[1]}</td>)*/}
-                            {/*                }*/}
-                            {/*                return null;*/}
-                            {/*            })}*/}
-                            {/*        </tr>)*/}
-                            {/*    })}*/}
-                            {/*</tbody>*/}
+                            <tbody>
+                            {Object.entries(props.rules).map((rule) => {
+                                return (<tr key={rule[0]}>
+                                    <td>{rule[1].type}</td>
+                                    <td>'{rule[1].styles['jacow']}' or equivalent style</td>
+                                    {Object.entries(rule[1]).map((r) => {
+                                        return ((r[0] !== 'type' && r[0] !== 'styles') ?
+                                            <td key={r[0]}>
+                                                {(typeof r[1] === 'string') && r[1]}
+                                                {(typeof r[1] === 'number') && r[1]}
+                                                {(r[1] === null) && <>None</>}
+                                                {(typeof r[1] === 'boolean') && <>{r[1] ? "Yes" : "No"}</>}
+                                                {(typeof r[1] === 'object') && r[1] !== null && Object.entries(r[1]).map((a: ([string, string | number])) => {
+                                                    return (<>{a[1]}</>);
+                                                })}
+                                            </td> : null)
+                                    })}
+                                </tr>)
+                            })}
+                            </tbody>
                         </table>
                     }
-                    {/*{% if section.rules %}*/}
-                    {/*<table className="table is-bordered is-fullwidth">*/}
-                    {/*    <thead>*/}
-                    {/*    <tr>*/}
-                    {/*        <th>Type</th>*/}
-                    {/*        <th>Details</th>*/}
-                    {/*        {% set rule_list = section.rules|first_value_in_dict %}*/}
-                    {/*        {% for rule, value in rule_list.items() %}*/}
-                    {/*        {% if rule not in ['type','styles'] %}*/}
-                    {/*        <th>{{get_style_column_header(rule)}}</th>*/}
-                    {/*        {% endif %}*/}
-                    {/*        {% endfor %}*/}
-                    {/*    </tr>*/}
-                    {/*    </thead>*/}
-                    {/*    <tbody>*/}
-                    {/*    {% for name, style in section.rules.items() %}*/}
-                    {/*    <tr>*/}
-                    {/*        <td>{{style['type']}}</td>*/}
-                    {/*        <td>'{{style['styles']['jacow']}}' or equivalent style</td>*/}
-                    {/*        {% for rule, value in style.items() %}*/}
-                    {/*        {% if rule not in ['type','styles'] %}*/}
-                    {/*        <td> {{value}} </td>*/}
-                    {/*        {% endif %}*/}
-                    {/*        {% endfor %}*/}
-                    {/*    </tr>*/}
-                    {/*    {% endfor %}*/}
-                    {/*    </tbody>*/}
-                    {/*</table>*/}
+                </details>
+            }
+
+            {props.extra_info && typeof props.extra_info === 'string' &&
+                <div className="extra-jacow-info" dangerouslySetInnerHTML={{__html: props.extra_info}}></div>}
+
+            {props.extra_info && typeof props.extra_info !== 'string' &&
+                <details className="details-jacow">
+                    <summary className="details-summary-jacow">{props.extra_info.title} for {props.title}</summary>
                 </details>
             }
         </div>
-        //     {% if section.rules or section.extra_rules %}
-        //     <details className="details-jacow">
-        //         <summary className="details-summary-jacow">Rules for {{section.title}}</summary>
-        //         {% if section.extra_rules %}
-        //         <div className="div-jacow-rules">
-        //             <ul>
-        //                 {% for rule in section.extra_rules %}
-        //                 <li>{{rule | safe}}</li>
-        //                 {% endfor %}
-        //             </ul>
-        //         </div>
-        //         {% endif %}
-
-        //         {% endif %}
-        //     </details>
-        //     <br/>
-        //     {% endif %}
-        //     {% if 'extra_info' in section %}
-        //     {% set extra_info = section.extra_info %}
-        //     {% if 'title' in extra_info %}
-        //     {% if not (section.show_total and section.details|length == 0) %}
-        //     <details {% if section.ok == false %} open {% endif %} className="details-jacow">
-        //         <summary className="details-summary-jacow">{{extra_info.title}} for {{section.title}}</summary>
-        //         {% if extra_info['multi'] %}
-        //         {{make_table_multi(section.details, extra_info.headers, extra_info.columns, args)}}
-        //         {%  else %}
-        //         {{make_table(section.details, extra_info.headers, extra_info.columns, args)}}
-        //         {% endif %}
-        //     </details>
-        //     <br/>
-        //     {% endif %}
-        //     {% elif extra_info %}
-        //     {{extra_info | safe}}
-        //     {% endif %}
-        //     {% endif %}
-        //     {% if section.rules %}
-        //     {% if section.details|length > 0 %}
-        //     <details {% if section.ok == false %} open {% endif %} className="details-jacow">
-        //         <summary className="details-summary-jacow">Style Breakdown for {{section.title}}</summary>
-        //         {% if args['style_multi'] %}
-        //         {{make_table_multi(section.details, false, false, args, section.rules)}}
-        //         {% else %}
-        //         {{make_table(section.details, false, false, args, section.rules)}}
-        //         {% endif %}
-        //     </details>
-        //     {% else %}
-        //     <div style="width:100%">
-        //         <div className="{{ False|pastel_background_style }} jacow-not-found">
-        //             No {{section.title}} found. Please check formatting if there should be some.
-        //         </div>
-        //     </div>
-        //     {% endif %}
-        //     {% endif %}
-        // </div>
     );
 }
 
