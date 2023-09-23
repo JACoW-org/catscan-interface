@@ -102,7 +102,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
     };
 
     return <div className={"row"}>
-        <div className={"col-8"}>
+        <div className={"col-lg-8"}>
             {upload === 'idle' &&
                 <form onSubmit={(e) => {
                     e.preventDefault();
@@ -163,7 +163,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                     </div>
                     <div>
                         <button type={"submit"} onClick={submitForm}
-                                className={`btn btn-primary ${acceptedFiles.length === 0 ? 'disabled' : ''}`}
+                                className={`btn btn-block btn-lg btn-primary ${acceptedFiles.length === 0 ? 'disabled' : ''}`}
                                 disabled={acceptedFiles.length === 0}>
                             Scan Paper <i className={"fas fa-chevron-right"}></i>
                         </button>
@@ -204,7 +204,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                     </button>
                 </div>}
         </div>
-        <div className={"col-4"}>
+        <div className={"col-4 p-4 hidden-md cat-col"}>
             <img src={"cat.png"} alt="cat"/>
         </div>
     </div>

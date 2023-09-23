@@ -10,10 +10,9 @@ function App() {
     return (
         <div>
             <div className="header">
-                <div className="container">
+                <div className="container header-row">
                     <a href="https://www.jacow.org/" target="_blank">
-                        <img alt="JaCoW Logo" className="float-md-right" height="50"
-                             src="https://www.jacow.org/pub/images/header.png"/>
+                        <img alt="JaCoW Logo" height="50" width={316} src={"jacow_image.png"}/>
                     </a>
                     <a href="/"><h1>Cat Scan</h1></a>
                 </div>
