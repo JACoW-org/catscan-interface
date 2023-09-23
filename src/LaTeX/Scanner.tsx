@@ -9,13 +9,10 @@ const Scanner: React.FC = () => {
         "\\maketitle\n" +
         "\\begin{abstract}\n" +
         "Make sure you include the whole file, including the references (bibtex currently not supported).\n" +
-        "You can also just paste in a \\bibitem to check for issues.\n" +
-        "For example:\n" +
         "\\bibitem{Example}\n" +
         "J. Peters, \"Top 10 common formatting mistakes with JACoW conference papers\", \\emph{Nature}, vol. 1, p. 1, Sep. 2023.\n" +
         "\\end{abstract}\n" +
         "\\end{document}\n";
-
     return (
         <div>
             <h2>LaTeX Validator</h2>
@@ -23,7 +20,7 @@ const Scanner: React.FC = () => {
                 <div>
                     <label>Paste in your LaTeX file below.</label>
                 </div>
-                <textarea className={"form-control"} placeholder={placeholder} rows={13}></textarea>
+                <textarea className={"form-control"} placeholder={placeholder} rows={11}></textarea>
             </div>
             <button className={"btn btn-primary btn-block btn-lg"}>Scan</button>
         </div>
