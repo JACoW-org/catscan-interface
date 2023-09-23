@@ -1,12 +1,13 @@
 import React from 'react';
-import Section, {OkType, SectionProps} from "./Section";
+import Section, {SectionProps} from "./Section";
+import './Report.css';
 
-type ReportProps = {
+type WordReport = {
     filename?: string,
     summary: SectionProps[]
 };
 
-const Report: React.FC<ReportProps> = (props) => {
+const Report: React.FC<WordReport> = (props) => {
 
     return (
         <div>
@@ -27,7 +28,7 @@ const Report: React.FC<ReportProps> = (props) => {
                     <div>
                         {Object.entries(props.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === false &&
-                                <Section {...section[1]} />
+                                <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
                         })}
                     </div>
@@ -40,7 +41,7 @@ const Report: React.FC<ReportProps> = (props) => {
                     <div>
                         {Object.entries(props.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === 2 &&
-                                <Section {...section[1]} />
+                                <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
                         })}
                     </div>
@@ -53,7 +54,7 @@ const Report: React.FC<ReportProps> = (props) => {
                     <div>
                         {Object.entries(props.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === true &&
-                                <Section {...section[1]} />
+                                <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
                         })}
                     </div>
@@ -63,7 +64,6 @@ const Report: React.FC<ReportProps> = (props) => {
     );
 }
 
-export type {ReportProps};
-
+export type {WordReport};
 
 export default Report;
