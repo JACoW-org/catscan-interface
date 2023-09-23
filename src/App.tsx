@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Report, {WordReport} from "./Word/Report";
@@ -66,6 +66,7 @@ function App() {
                 {page === Pages.LaTeX && <>
                     <Scanner />
                 </>}
+
                 {page === Pages.Resources && <>
                     <h2>Resources</h2>
                     <ul>
