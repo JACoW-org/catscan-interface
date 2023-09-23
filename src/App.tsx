@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Report, {WordReport} from "./Word/Report";
 import WordUpload from "./Word/WordUpload";
+import Scanner from "./LaTeX/Scanner";
+import { useCookies } from "react-cookie";
 
 enum Pages {
     Word,
@@ -12,7 +14,13 @@ enum Pages {
 
 function App() {
     const [report, setReport] = React.useState(null as WordReport | null);
-    const [page, setPage] = React.useState(Pages.Word);
+    const [cookies, setCookie] = useCookies(["page"]);
+    const [page, setPage] = React.useState(cookies["page"] as Pages || Pages.Word);
+
+    const changePage = (page: Pages) => {
+        setCookie("page", page);
+        setPage(page);
+    };
 
     return (
         <div>
@@ -35,13 +43,13 @@ function App() {
                         <div className="collapse navbar-collapse" id="navbarContent">
                             <ul className="navbar-nav mr-auto">
                                 <li className={`nav-item ${page === Pages.Word ? "active" : ""}`}>
-                                    <a onClick={(e) => setPage(Pages.Word)} className="nav-link" href="#">Word</a>
+                                    <a onClick={(e) => changePage(Pages.Word)} className="nav-link" href="#">Word</a>
                                 </li>
                                 <li className={`nav-item ${page === Pages.LaTeX ? "active" : ""}`}>
-                                    <a onClick={(e) => setPage(Pages.LaTeX)} className="nav-link" href="#">LaTeX</a>
+                                    <a onClick={(e) => changePage(Pages.LaTeX)} className="nav-link" href="#">LaTeX</a>
                                 </li>
                                 <li className={`nav-item ${page === Pages.Resources ? "active" : ""}`}>
-                                    <a onClick={(e) => setPage(Pages.Resources)} className="nav-link" href="#">Resources</a>
+                                    <a onClick={(e) => changePage(Pages.Resources)} className="nav-link" href="#">Resources</a>
                                 </li>
                             </ul>
                         </div>
@@ -55,6 +63,9 @@ function App() {
                     {report !== null && <Report {...report} />}
                 </>}
 
+                {page === Pages.LaTeX && <>
+                    <Scanner />
+                </>}
                 {page === Pages.Resources && <>
                     <h2>Resources</h2>
                     <ul>
