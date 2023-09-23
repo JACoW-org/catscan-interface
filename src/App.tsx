@@ -3,14 +3,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import {Accept, useDropzone} from 'react-dropzone'
 import axios from 'axios';
+import Report, {ReportProps} from "./Report";
 
 type Conference = {
     id: number,
     code: string,
-}
-
-type Results = {
-    filename: string
 }
 
 const baseUrl = "https://catscan-checker-fe4ty.ondigitalocean.app/catscan";
@@ -25,7 +22,7 @@ function App() {
     const [progress, setProgress] = React.useState(0);
     const [upload, setUpload] = React.useState('idle' as Upload);
     const [error, setError] = React.useState('' as string);
-    const [results, setResults] = React.useState({} as Results);
+    const [report, setReport] = React.useState({} as ReportProps | null);
     const opts = {
         noDrag: true,
         accept: onlyDocx,
@@ -36,7 +33,7 @@ function App() {
         setProgress(0);
         setUpload('idle');
         setError('');
-        setResults({} as Results);
+        setReport(null);
     }
 
     const {getRootProps, getInputProps, acceptedFiles} = useDropzone(opts);
@@ -95,7 +92,8 @@ function App() {
                 setError(response.data.error)
             } else {
                 setUpload("success");
-                setResults(response.data)
+                setReport(response.data)
+                console.log(response.data);
             }
         } catch (e: any) {
             setError(`An unknown error occurred: ${e}`);
@@ -137,14 +135,17 @@ function App() {
             </div>
 
             <div className="container">
+
+                {(upload !== "success" || report == null) &&
                 <div className={"row"}>
                     <div className={"col-8"}>
-                        <h2>Word Validator</h2>
                         {upload === 'idle' &&
                             <form onSubmit={(e) => {
                                 e.preventDefault();
                                 submitForm();
                             }}>
+
+                                <h2>Word Validator</h2>
                                 <div className={"form-group"}>
                                     <label>Select a conference: (optional)</label>
                                     <div>
@@ -203,27 +204,25 @@ function App() {
                                         Scan Paper <i className={"fas fa-chevron-right"}></i>
                                     </button>
                                 </div>
-                            </form>
-                        }
+                            </form>}
 
-                        {(upload === "uploading" || upload === "processing") &&
+                        {(upload === "uploading" || upload === "processing") && <>
+                            <h2>Uploading document...</h2>
                             <div className="progress">
                                 <div className="progress-bar progress-bar-striped progress-bar-animated"
                                      style={{width: (progress + "%")}}>
                                 </div>
                             </div>
-                        }
-
-                        {upload === "processing" &&
-                            <div>
-                                <div>
+                            {upload === "processing" &&
+                                <p className={"py-2"}>
                                     Processing file <i className="fas fa-circle-notch fa-spin"></i>
-                                </div>
-                            </div>
-                        }
+                                </p>
+                            }
+                        </>}
 
                         {upload === "error" &&
                             <div>
+                                <h2>Failed to process</h2>
                                 <div className={"alert alert-danger error-panel"}>
                                     <div><i className="fas fa-exclamation-circle fa-2x"></i></div>
 
@@ -239,17 +238,18 @@ function App() {
                                 <button className={"btn btn-primary"} onClick={(e) => restart()}>
                                     <i className="fas fa-chevron-left"></i> Try Again
                                 </button>
-                            </div>
-                        }
+                            </div>}
                     </div>
                     <div className={"col-4"}>
                         <img src={"cat.png"} alt="cat"/>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div>}
 
-    );
+                {upload === "success" && report !== null &&
+                    <Report {...report} />
+                }
+            </div>
+        </div>);
 }
 
 export default App;

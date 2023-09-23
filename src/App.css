@@ -88,3 +88,32 @@ body {
     align-items: center;
     gap: 12px;
 }
+
+.extra-jacow-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.ok-type {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top:16px;
+}
+
+.details-jacow {
+    padding: 8px;
+}
+
+.section {
+    margin: 16px 0;
+}
+
+.card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
