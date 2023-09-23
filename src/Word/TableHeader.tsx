@@ -17,7 +17,7 @@ const TableHeader: React.FC<TableHeadersProps> = (props) => {
             <tr>
                 <th>Text Style Name</th>
                 {Object.keys(firstRule).map((rule) => {
-                    return ['type', 'styles'].indexOf(rule) === -1 ? <th>{rule}</th> : null;
+                    return ['type', 'styles'].indexOf(rule) === -1 ? <th>{rule.replace("_", " ")}</th> : null;
                 })}
             </tr>
             </thead>

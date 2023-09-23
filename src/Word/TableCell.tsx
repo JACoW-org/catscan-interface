@@ -20,15 +20,15 @@ const TableCell: React.FC<TableCellProps> = (props) => {
         } else if (props.col.indexOf("_ok") !== -1) {
             switch (props.value) {
                 case 2:
-                    return <td className="text-warning">
+                    return <td className="text-warning text-center">
                         <i className={"fas fa-exclamation-triangle"}></i>
                     </td>;
                 case true:
-                    return <td className="text-success">
+                    return <td className="text-success text-center">
                         <i className={"fas fa-check-circle"}></i>
                     </td>;
                 case false:
-                    return <td className="text-danger">
+                    return <td className="text-danger text-center">
                         <i className={"fas fa-times-circle"}></i>
                     </td>;
             }
