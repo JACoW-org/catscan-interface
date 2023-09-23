@@ -51,3 +51,7 @@
 .title-icons h4 {
     margin-bottom:0;
 }
+
+.table th {
+    text-align: center;
+}

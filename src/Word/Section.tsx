@@ -1,6 +1,7 @@
 import React from "react";
 import Rules from "./Rules";
 import ExtraInfo from "./ExtraInfo";
+import Details from "./Details";
 
 type OkType = true | false | 2;
 
@@ -95,6 +96,14 @@ const Section: React.FC<SectionProps> = (props) => {
             <Rules rules={props.rules} extra_rules={props.extra_rules} title={props.title} />
 
             {props.extra_info && <ExtraInfo title={props.title} extra_info={props.extra_info} show_total={props.show_total ?? false} details={props.details} ok={props.ok} args={sectionArgs} />}
+
+            {props.rules && (props.details.length > 0) && <Details ok={props.ok} args={sectionArgs} details={props.details}  rules={props.rules} title={props.title} />}
+
+            {props.rules && (props.details.length === 0) && <div>
+                <div className="{jacow-not-found">
+                    No {props.title} found. Please check formatting if there should be some.
+                </div>
+            </div>}
         </div>
     );
 }

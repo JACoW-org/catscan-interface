@@ -19,7 +19,7 @@ const ExtraInfo: React.FC<ExtraInfoProps> = (props) => {
             <div className="extra-jacow-info" dangerouslySetInnerHTML={{__html: props.extra_info}}></div>}
 
         {props.extra_info && typeof props.extra_info !== 'string' && props.extra_info.title && (!props.show_total || props.details.length > 0) &&
-            <details className={`details-jacow ${props.ok !== false ? 'open' : 'closed'}`}>
+            <details open={props.ok !== true} className={`details-jacow`}>
                 <summary className="details-summary-jacow">{props.extra_info.title} for {props.title}</summary>
                 {isMulti ?
                     <div className={"mt-3"}><TableMulti data={props.details} columns={props.extra_info.columns}
