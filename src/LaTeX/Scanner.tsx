@@ -5,14 +5,14 @@ const Scanner: React.FC = () => {
     const placeholder = "\\documentclass[a4paper]{jacow}\n" +
         "\\begin{document}\n" +
         "\\title{Paste your full LaTeX file}\n" +
-        "\\author{J. Peters \\thanks{catscan@joshp.me} and D. Button}\t\n" +
+        "\\author{J. Peters\\thanks{catscan@joshp.me}}\t\n" +
         "\\maketitle\n" +
         "\\begin{abstract}\n" +
         "Make sure you include the whole file, including the references (bibtex currently not supported).\n" +
         "You can also just paste in a \\bibitem to check for issues.\n" +
         "For example:\n" +
         "\\bibitem{Example}\n" +
-        "D. Button, “Reasons why people often format references incorrect.”, \\emph{Human Nature}, p. 1, Jan. 10,000 BC.\n" +
+        "J. Peters, \"Top 10 common formatting mistakes with JACoW conference papers\", \\emph{Nature}, vol. 1, p. 1, Sep. 2023.\n" +
         "\\end{abstract}\n" +
         "\\end{document}\n";
 
