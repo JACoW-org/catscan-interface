@@ -25,7 +25,6 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
     const [upload, setUpload] = React.useState('idle' as Upload);
     const [error, setError] = React.useState('' as string);
     const opts = {
-        noDrag: true,
         accept: onlyDocx,
         multiple: false,
     };

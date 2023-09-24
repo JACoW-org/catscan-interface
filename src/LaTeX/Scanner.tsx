@@ -1,7 +1,8 @@
-import React from "react";
+import React, {FormEventHandler} from "react";
 
 
 const Scanner: React.FC = () => {
+    const [latex, setLatex] = React.useState("");
     const placeholder = "\\documentclass[a4paper]{jacow}\n" +
         "\\begin{document}\n" +
         "\\title{Paste your full LaTeX file}\n" +
@@ -13,17 +14,25 @@ const Scanner: React.FC = () => {
         "J. Peters, \"Top 10 common formatting mistakes with JACoW conference papers\", \\emph{Nature}, vol. 1, p. 1, Sep. 2023.\n" +
         "\\end{abstract}\n" +
         "\\end{document}\n";
+
+    const submit = () => {
+        console.log(latex);
+    };
     return (
-        <div>
+        <form onSubmit={(e) => {
+            e.preventDefault()
+            submit()
+        }}>
             <h2>LaTeX Validator</h2>
             <div className={"form-group"}>
                 <div>
-                    <label>Paste in your LaTeX file below.</label>
+                    <label>Paste in your LaTeX file below</label>
                 </div>
-                <textarea className={"form-control"} placeholder={placeholder} rows={11}></textarea>
+                <textarea className={"form-control"} onChange={(e) => setLatex(e.target.value)} value={latex}
+                          placeholder={placeholder} rows={11}></textarea>
             </div>
             <button className={"btn btn-primary btn-block btn-lg"}>Scan</button>
-        </div>
+        </form>
     );
 }
 
