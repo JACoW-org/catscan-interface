@@ -1,4 +1,4 @@
-import {Detail, OkType, SectionArgs} from "./Section";
+import {Detail, SectionArgs} from "./Section";
 
 type TableCellProps = {
     col: boolean | string,

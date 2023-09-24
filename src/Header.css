@@ -1,0 +1,21 @@
+.header {
+    padding: 10px 0 0 0;
+}
+
+.header a, .header h1 {
+    color: #000000;
+    text-decoration: none;
+}
+
+.header-row {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .header-row {
+        flex-direction: column;
+    }
+}

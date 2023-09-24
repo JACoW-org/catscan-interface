@@ -33,7 +33,7 @@ type SectionProps = {
     rules: { [key: string]: Rule; }
     extra_rules: string[] | string
     help_info: string
-    details: { [key: string]: Detail}[]
+    details: { [key: string]: Detail }[]
     extra_info?: string | ExtraInfoType
     show_total?: boolean
 }
@@ -76,14 +76,14 @@ const Section: React.FC<SectionProps> = (props) => {
     const sectionArgs = getSectionArgs();
 
     return (<div className={"section card"}>
-            {props.anchor && <a id={props.anchor.replace(" ", "_")}></a>}
             <div className={"card-header"}>
                 <div className={"title-icons"}>
                     {props.ok === true && <i className={"text-success fas fa-check-circle"}></i>}
                     {props.ok === false && <i className={"text-danger fas fa-times-circle"}></i>}
                     {props.ok === 2 && <i className={"text-warning fas fa-exclamation-triangle"}></i>}
                     {(typeof sectionArgs.section_header === 'undefined') && <h4>{props.title}</h4>}
-                    {(typeof sectionArgs.section_header === 'string') && <h4 dangerouslySetInnerHTML={{__html: sectionArgs.section_header}}></h4>}
+                    {(typeof sectionArgs.section_header === 'string') &&
+                        <h4 dangerouslySetInnerHTML={{__html: sectionArgs.section_header}}></h4>}
                 </div>
                 {props.help_info &&
                     <a href={`https://www.jacow.org/Authors/${props.help_info}`} target="_target">
@@ -93,11 +93,14 @@ const Section: React.FC<SectionProps> = (props) => {
                 }
             </div>
 
-            <Rules rules={props.rules} extra_rules={props.extra_rules} title={props.title} />
+            <Rules rules={props.rules} extra_rules={props.extra_rules} title={props.title}/>
+            {props.extra_info &&
+                <ExtraInfo title={props.title} extra_info={props.extra_info} show_total={props.show_total ?? false}
+                           details={props.details} ok={props.ok} args={sectionArgs}/>}
 
-            {props.extra_info && <ExtraInfo title={props.title} extra_info={props.extra_info} show_total={props.show_total ?? false} details={props.details} ok={props.ok} args={sectionArgs} />}
-
-            {props.rules && (props.details.length > 0) && <Details ok={props.ok} args={sectionArgs} details={props.details}  rules={props.rules} title={props.title} />}
+            {props.rules && (props.details.length > 0) &&
+                <Details ok={props.ok} args={sectionArgs} details={props.details} rules={props.rules}
+                         title={props.title}/>}
 
             {props.rules && (props.details.length === 0) && <div>
                 <div className="{jacow-not-found">

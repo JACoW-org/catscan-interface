@@ -1,5 +1,4 @@
-import React, {FormEventHandler} from "react";
-
+import React from "react";
 
 const Scanner: React.FC = () => {
     const [latex, setLatex] = React.useState("");

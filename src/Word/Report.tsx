@@ -7,15 +7,19 @@ type WordReport = {
     summary: SectionProps[]
 };
 
-const Report: React.FC<WordReport> = (props) => {
+type ReportProps = {
+    report: WordReport,
+}
 
+const Report: React.FC<ReportProps> = (props) => {
+    const report = props.report;
     return (
         <div>
-            {props.filename &&
-                <h2 className="title">Report for {props.filename}</h2>
+            {report.filename &&
+                <h2 className="title">Report for {report.filename}</h2>
             }
             <div className={"mb-2"}>
-                <a href="https://www.jacow.org/Authors/CSEHelp" title="Author Help" target="_blank">
+                <a href="https://www.jacow.org/Authors/CSEHelp" title="Author Help" rel="noreferrer" target="_blank">
                     Cat Scan Word Validator - Help and Usage Guidelines</a>
             </div>
 
@@ -26,7 +30,7 @@ const Report: React.FC<WordReport> = (props) => {
                         Errors
                     </h3>
                     <div>
-                        {Object.entries(props.summary).map((section) => {
+                        {Object.entries(report.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === false &&
                                 <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
@@ -39,7 +43,7 @@ const Report: React.FC<WordReport> = (props) => {
                         Warnings
                     </h3>
                     <div>
-                        {Object.entries(props.summary).map((section) => {
+                        {Object.entries(report.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === 2 &&
                                 <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
@@ -52,7 +56,7 @@ const Report: React.FC<WordReport> = (props) => {
                         Ok
                     </h3>
                     <div>
-                        {Object.entries(props.summary).map((section) => {
+                        {Object.entries(report.summary).map((section) => {
                             return (<React.Fragment key={section[0]}>{section[1].ok === true &&
                                 <Section name={section[0]} {...section[1]} />
                             }</React.Fragment>)
