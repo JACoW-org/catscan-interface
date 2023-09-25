@@ -15,19 +15,32 @@ type ReportProps = {
     report: WordReport,
 }
 
-const Word: React.FC<ReportProps> = (props) => {
-    const report = props.report;
-    const [showAllScores, setShowAllScores] = React.useState(false);
-
-    // map scores
-    const successCount = report.scores.total[0]
-    const warningCount = report.scores.total[1]
-    const errorCount = report.scores.total[2]
+const getScores = (scores: [number, number, number]) => {
+    const successCount = scores[0]
+    const warningCount = scores[1]
+    const errorCount = scores[2]
     const total = successCount + warningCount + errorCount
     const successPercent = Math.round((successCount / total) * 100);
     const warningPercent = Math.round((warningCount / total) * 100);
     const errorPercent = Math.round((errorCount / total) * 100);
+    return {
+        'total': total, 'count': {
+            'success': successCount,
+            'warning': warningCount,
+            'error': errorCount
+        }, 'percent': {
+            'success': successPercent,
+            'warning': warningPercent,
+            'error': errorPercent
+        }
+    }
+}
 
+const Word: React.FC<ReportProps> = (props) => {
+    const report = props.report;
+    const [showAllScores, setShowAllScores] = React.useState(false);
+
+    const totals = getScores(report.scores.total)
     return (
         <div>
             {report.filename &&
@@ -44,78 +57,75 @@ const Word: React.FC<ReportProps> = (props) => {
             </div>
 
             {showAllScores &&
-            <div>
-                {Object.entries(report.scores).map((section) => {
-                    if (section[0] === 'total') {
-                        return null;
-                    }
-                    const successCount = section[1][0]
-                    const warningCount = section[1][1]
-                    const errorCount = section[1][2]
-                    const total = successCount + warningCount + errorCount
+                <div>
+                    {Object.entries(report.scores)
+                        .map((section) => {
 
-                    if (total === 0) {
-                        return null;
-                    }
+                            if (section[0] === 'total') {
+                                return null;
+                            }
+                            const scores = getScores(section[1])
 
-                    const successPercent = Math.round((successCount / total) * 100);
-                    const warningPercent = Math.round((warningCount / total) * 100);
-                    const errorPercent = Math.round((errorCount / total) * 100);
+                            if (scores.total === 0) {
+                                return null;
+                            }
 
-                    return <div key={section[0]} className={"scores"}>
-                        <div>{section[0]}</div>
-                        <div className="progress">
-                            <div className="progress-bar bg-success" role="progressbar"
-                                 style={{width: successPercent + '%'}}
-                                 aria-valuenow={successPercent}
-                                 aria-valuemin={0} aria-valuemax={100}>
-                                {successCount} Ok
+                            return <div key={section[0]} className={"scores"}>
+                                <div>{section[0]}</div>
+                                <div className="progress">
+                                    <div className="progress-bar bg-success" role="progressbar"
+                                         style={{width: scores.percent.success + '%'}}
+                                         aria-valuenow={scores.percent.success}
+                                         aria-valuemin={0} aria-valuemax={100}>
+                                        {scores.count.success} Ok
+                                    </div>
+                                    <div className="progress-bar bg-warning" role="progressbar"
+                                         style={{width: scores.percent.warning + '%'}}
+                                         aria-valuenow={scores.percent.warning}>
+                                        {scores.count.warning} Warnings
+                                    </div>
+
+                                    <div className="progress-bar bg-danger" role="progressbar"
+                                         style={{width: scores.percent.error + '%'}}
+                                         aria-valuenow={scores.percent.error}
+                                         aria-valuemin={0} aria-valuemax={100}>
+                                        {scores.count.error} Errors
+                                    </div>
+                                </div>
                             </div>
-                            <div className="progress-bar bg-warning" role="progressbar"
-                                 style={{width: warningPercent + '%'}}
-                                 aria-valuenow={warningPercent}>
-                                {warningCount} Warnings
-                            </div>
+                        })}
+                </div>}
 
-                            <div className="progress-bar bg-danger" role="progressbar"
-                                 style={{width: errorPercent + '%'}}
-                                 aria-valuenow={errorPercent}
-                                 aria-valuemin={0} aria-valuemax={100}>
-                                {errorCount} Errors
-                            </div>
-                        </div>
-                    </div>
-                })}
-            </div>}
 
             <div className={"scores"}>
                 <div>Overall</div>
                 <div className="progress">
                     <div className="progress-bar bg-success" role="progressbar"
-                         style={{width: successPercent + '%'}}
-                         aria-valuenow={successPercent}
+                         style={{width: totals.percent.success + '%'}}
+                         aria-valuenow={totals.percent.success}
                          aria-valuemin={0} aria-valuemax={100}>
-                        {successCount} Ok
+                        {totals.count.success} Ok
                     </div>
                     <div className="progress-bar bg-warning" role="progressbar"
-                         style={{width: warningPercent + '%'}}
-                         aria-valuenow={warningPercent}>
-                        {warningCount} Warnings
+                         style={{width: totals.percent.warning + '%'}}
+                         aria-valuenow={totals.percent.warning}>
+                        {totals.count.warning} Warnings
                     </div>
 
                     <div className="progress-bar bg-danger" role="progressbar"
-                         style={{width: errorPercent + '%'}}
-                         aria-valuenow={errorPercent}
+                         style={{width: totals.percent.error + '%'}}
+                         aria-valuenow={totals.percent.error}
                          aria-valuemin={0} aria-valuemax={100}>
-                        {errorCount} Errors
+                        {totals.count.error} Errors
                     </div>
                 </div>
             </div>
 
-            <div className={"mt-2"}>
+            <div className={"my-2 mb-4"}>
                 <button onClick={(e) =>
                     setShowAllScores(!showAllScores)
-                } className="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#all-scores"
+                } className="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse"
+                        data-target="#all-scores"
                         aria-expanded="false" aria-controls="all-scores">
                     {!showAllScores && <><i className={"fas fa-chevron-down"}></i> Show all scores</>}
                     {showAllScores && <><i className={"fas fa-chevron-up"}></i> Hide scores</>}

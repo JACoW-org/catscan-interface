@@ -9,10 +9,8 @@ const Resources: React.FC = () => {
             <li><a href={"https://www.jacow.org/Authors/CSEHelp"}>Author Help</a></li>
         </ul>
         <p>
-            The Cat Scan tool was originally developed by
-            <a rel="noreferrer" target={"_blank"} href={"https://www.ansto.gov.au/"}>ANSTO</a>,
-            and is now maintained by
-            <a rel="noreferrer" target={"_blank"} href={"https://github.com/joshpme/"}>Josh Peters</a>.
+            The Cat Scan tool was originally developed by <a rel="noreferrer" target={"_blank"} href={"https://www.ansto.gov.au/"}>ANSTO</a>,
+            and is now maintained by <a rel="noreferrer" target={"_blank"} href={"https://github.com/joshpme/"}>Josh Peters</a>.
         </p>
     </>);
 };
