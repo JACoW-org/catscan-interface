@@ -18,14 +18,9 @@ const Nav: React.FC<NavProps> = (props) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarContent">
                     <ul className="navbar-nav mr-auto">
-                        <li className={`nav-item ${props.page === Pages.Word ? "active" : ""}`}>
-                            <button onClick={(e) => props.changePage(Pages.Word)} className="nav-link"
-                                    type={"button"}>Word
-                            </button>
-                        </li>
-                        <li className={`nav-item ${props.page === Pages.LaTeX ? "active" : ""}`}>
-                            <button onClick={(e) => props.changePage(Pages.LaTeX)} className="nav-link"
-                                    type={"button"}>LaTeX
+                        <li className={`nav-item ${props.page === Pages.Upload ? "active" : ""}`}>
+                            <button onClick={(e) => props.changePage(Pages.Upload)} className="nav-link"
+                                    type={"button"}>Validator
                             </button>
                         </li>
                         <li className={`nav-item ${props.page === Pages.Resources ? "active" : ""}`}>

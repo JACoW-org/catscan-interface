@@ -1,23 +1,27 @@
 import React from 'react';
 import {Accept, useDropzone} from 'react-dropzone'
 import axios from 'axios';
-import './WordUpload.css';
+import './Upload.css';
+import {Report} from "./App";
 
 type Conference = {
     id: number,
     code: string,
 }
+
 type Upload = "idle" | "uploading" | "processing" | "success" | "error";
-
 const baseUrl = "https://catscan-checker-fe4ty.ondigitalocean.app/catscan";
-const onlyDocx: Accept = {"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]};
+const latexUrl = "https://faas-syd1-c274eac6.doserverless.co/api/v1/web/fn-19977d5d-a466-4a2d-bfd5-e29ba32197eb/catscan/latex"
+const onlyDocx: Accept = {
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+    "application/x-tex": [".tex"]
+};
 const storage = "https://catstore.syd1.digitaloceanspaces.com/";
-
-type WordUploadProps = {
-    setReport: (report: any) => void
+type UploadProps = {
+    setReport: (report: Report) => void
 }
 
-const WordUpload: React.FC<WordUploadProps> = (props) => {
+const Upload: React.FC<UploadProps> = (props) => {
     const [conferences, setConferences] =
         React.useState([] as Conference[]);
     const [selectedConference, setSelectedConference] = React.useState(0);
@@ -47,7 +51,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
         });
     }, []);
 
-    const uploadPaper = () => {
+    const uploadWord = () => {
         const formData = new FormData();
         // eslint-disable-next-line no-template-curly-in-string
         formData.append("key", "${filename}");
@@ -67,6 +71,26 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
         });
     }
 
+
+    const uploadLaTeX = async (content: string) => {
+        return axios({
+            onUploadProgress: (progressEvent) => {
+                if (progressEvent.progress !== undefined) {
+                    setProgress(Math.round(progressEvent.progress * 100));
+                }
+            },
+            url: latexUrl,
+            method: 'POST',
+            data: {
+                filename: acceptedFiles[0].name,
+                content: content
+            },
+            headers: {
+                'Content-Type': "application/json"
+            }
+        });
+    }
+
     const processPaper = () => {
         return axios({
             url: baseUrl + "/word",
@@ -82,17 +106,32 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
     }
     const submitForm = async () => {
         try {
-            setUpload("uploading");
-            await uploadPaper()
-            setUpload("processing");
-            const response = await processPaper()
-            if (response.data.error !== undefined) {
-                setUpload("error");
-                setError(response.data.error)
-            } else {
-                setUpload("success");
-                props.setReport(response.data);
-                console.log(response.data);
+            if (acceptedFiles.length > 0) {
+                setUpload("uploading");
+                if (acceptedFiles[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                    await uploadWord()
+                    setUpload("processing");
+                    const response = await processPaper()
+                    if (response.data.error !== undefined) {
+                        setUpload("error");
+                        setError(response.data.error)
+                    } else {
+                        setUpload("success");
+                        props.setReport({ type: "word", report: response.data});
+                        console.log(response.data);
+                    }
+                } else {
+                    const content = await acceptedFiles[0].text()
+                    const response = await uploadLaTeX(content)
+                    if (response.data.error !== undefined) {
+                        setUpload("error");
+                        setError(response.data.error)
+                    } else {
+                        setUpload("success");
+                        props.setReport({ type: "latex", report: {...response.data, content: content }});
+                        console.log(response.data);
+                    }
+                }
             }
         } catch (e: any) {
             setError(`An unknown error occurred: ${e}`);
@@ -108,7 +147,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                     submitForm();
                 }}>
 
-                    <h2>Word Validator</h2>
+                    <h2>Word and LaTeX Validator</h2>
                     <div className={"form-group"}>
                         <label>Select a conference: (optional)</label>
                         <div>
@@ -130,7 +169,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                     </div>
                     <div className={"form-group"}>
                         <div>
-                            <label>Upload a Word file</label>
+                            <label>Upload a Word or LaTeX file</label>
                         </div>
                         <section>
                             <div {...getRootProps()} className={"dropzone"}>
@@ -138,10 +177,13 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
 
                                 {acceptedFiles.length > 0 &&
                                     <div>
+                                        {acceptedFiles[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ?
                                         <div className={"pb-2"}>
                                             <i className="fas fa-4x fa-file-word"></i>
-
-                                        </div>
+                                        </div>:
+                                        <div className={"pb-2"}>
+                                            <i className="fas fa-4x fa-file-code"></i>
+                                        </div>}
                                         <div>{acceptedFiles[0].name}</div>
                                         <div className={"small"}>
                                             {(acceptedFiles[0].size / 1024 / 1024).toFixed(2)} mb
@@ -154,7 +196,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                                             <i className="fas fa-4x fa-upload"></i>
                                         </div>
                                         <div>Drop a file here, or click to select a file</div>
-                                        <div className={"small"}>File must be PAPERID.docx</div>
+                                        <div className={"small"}>File must be PAPERID.docx or PAPERID.tex</div>
                                     </div>
                                 }
                             </div>
@@ -164,7 +206,7 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
                         <button type={"submit"} onClick={submitForm}
                                 className={`btn btn-block btn-lg btn-primary ${acceptedFiles.length === 0 ? 'disabled' : ''}`}
                                 disabled={acceptedFiles.length === 0}>
-                            Scan Paper <i className={"fas fa-chevron-right"}></i>
+                            Scan Paper
                         </button>
                     </div>
                 </form>}
@@ -209,4 +251,4 @@ const WordUpload: React.FC<WordUploadProps> = (props) => {
     </div>
 }
 
-export default WordUpload;
+export default Upload;

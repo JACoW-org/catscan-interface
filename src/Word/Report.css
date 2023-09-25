@@ -12,6 +12,12 @@
     padding: 8px 0;
 }
 
+.score-type {
+    display: flex;
+    gap: 8px;
+    margin:16px 0 8px 0;
+}
+
 .ok-type {
     display: flex;
     flex-direction: column;

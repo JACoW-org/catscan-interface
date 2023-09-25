@@ -1,27 +1,30 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import {WordReport} from "./Word/Report";
-import LaTeX from "./LaTeX/Scanner";
-import { useCookies } from "react-cookie";
+import Word, {WordReport} from "./Word/Word";
+import LaTeX, {LaTeXReport} from "./LaTeX/LaTeX";
 import Nav from "./Nav";
 import Resources from "./Resources/Resources";
-import Word from "./Word/Word";
 import Header from "./Header";
+import Upload from "./Upload";
 
 enum Pages {
-    Word,
-    LaTeX,
+    Upload,
     Resources
 }
 
+type ReportType = "word" | "latex";
+
+type Report = {
+    type: ReportType,
+    report: WordReport | LaTeXReport
+};
+
 function App() {
-    const [report, setReport] = React.useState(null as WordReport | null);
-    const [cookies, setCookie] = useCookies(["page"]);
-    const [page, setPage] = React.useState(cookies["page"] as Pages || Pages.Word);
+    const [report, setReport] = React.useState(null as Report | null);
+    const [page, setPage] = React.useState(Pages.Upload);
 
     const changePage = (page: Pages) => {
-        setCookie("page", page);
         setReport(null);
         setPage(page);
     };
@@ -31,12 +34,15 @@ function App() {
             <Header />
             <Nav page={page} changePage={changePage} />
             <div className="container">
-                {page === Pages.Word && <Word changePage={changePage} report={report} setReport={setReport}/>}
-                {page === Pages.LaTeX && <LaTeX />}
+                {page === Pages.Upload && report === null && <Upload setReport={setReport} />}
+                {page === Pages.Upload && report !== null && report.type === 'word' && <Word report={report.report as WordReport} />}
+                {page === Pages.Upload && report !== null && report.type === 'latex' && <LaTeX report={report.report as LaTeXReport} />}
                 {page === Pages.Resources && <Resources />}
             </div>
         </div>);
 }
+
+export type {Report};
 
 export {Pages};
 

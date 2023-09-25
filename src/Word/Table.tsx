@@ -14,7 +14,7 @@ type TableProps = {
 const Table: React.FC<TableProps> = (props) => {
     return (
         <div className={"full-width-table"}>
-        <table className="table">
+        <table className="table table-bordered">
             <TableHeader rules={props.rules} headers={props.headers} />
             <tbody>
             {props.data.map((row, index) => {

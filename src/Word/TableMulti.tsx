@@ -14,13 +14,13 @@ type TableMultiProps = {
 const TableMulti: React.FC<TableMultiProps> = (props) => {
 
     return (
-        <div className={"full-width-table"}>
-            <table className="table">
+        <div className={"full-width-table "}>
+            <table className="table table-bordered">
                 <TableHeader rules={props.rules} headers={props.headers} />
                 <tbody>
                 {props.data.map((row) => {
                     return <>{props.data.map((r, index) => {
-                        return <TableRow id={index} data={r} columns={props.columns} args={props.args} rules={props.rules}/>
+                        return <TableRow id={index+1} data={r} columns={props.columns} args={props.args} rules={props.rules}/>
                     })}</>
                 })}
                 </tbody>
