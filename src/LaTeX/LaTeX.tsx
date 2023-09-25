@@ -84,14 +84,19 @@ function encode_utf8( s: string )
 
 function setCursorPosition(inputElement: any, startInBytes: number, endInBytes: number) {
     let startSelection = 0;
+    let newLines = 0;
     for (let bytePos = 0; bytePos < startInBytes; startSelection++) {
         let ch = inputElement.value.charCodeAt(startSelection);
         if (ch < 128) {
             bytePos++;
+            if (ch === '\n'.charCodeAt(0) || ch === '\r'.charCodeAt(0)) {
+                newLines++;
+            }
         } else {
             bytePos += encode_utf8(inputElement.value[startSelection]).length;
         }
     }
+    startSelection -= newLines;
     // let endSelection = startSelection;
     // for (let bytePos = startSelection; bytePos < endInBytes; endSelection++) {
     //     let ch = inputElement.value.charCodeAt(endSelection);
@@ -101,7 +106,7 @@ function setCursorPosition(inputElement: any, startInBytes: number, endInBytes: 
     //         bytePos += encode_utf8(inputElement.value[endSelection]).length;
     //     }
     // }
-    inputElement.setSelectionRange(startSelection, startSelection+2);
+    inputElement.setSelectionRange(startSelection, startSelection+(endInBytes-startInBytes));
 }
 
 
@@ -109,11 +114,11 @@ const LaTeX: React.FC<ReportProps> = (props) => {
     const report = props.report;
     const [currentIssue, setCurrentIssue] = React.useState(0);
     const textInput = useRef(null as any);
-    const start = report.comments ? report.comments[currentIssue].location.start : 0;
-    const end = report.comments ? report.comments[currentIssue].location.end : 0;
+    const start = report.issues ? report.issues[currentIssue].location.start : 0;
+    const end = report.issues ? report.issues[currentIssue].location.end : 0;
 
     useLayoutEffect(() => {
-        if (report.comments) {
+        if (report.issues) {
             if (textInput.current) {
                 textInput.current.blur();
                 textInput.current.focus();
@@ -123,7 +128,7 @@ const LaTeX: React.FC<ReportProps> = (props) => {
         }
     }, [currentIssue]);
 
-    if (!report.comments) {
+    if (!report.issues) {
         return (
             <div>
                 {report.filename &&
@@ -134,13 +139,13 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                        target="_blank">
                         Cat Scan LaTeX Validator - Help and Usage Guidelines</a>
                 </div>
-                <div>No comments detected!</div>
+                <div>No issues detected!</div>
             </div>
         )
     }
 
-    const issue = report.comments[currentIssue];
-    // const issueType = issueTypes[issue.type];
+    const issue = report.issues[currentIssue];
+    const issueType = issueTypes[issue.type];
 
     return (
         <div>
@@ -152,28 +157,33 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                     Cat Scan LaTeX Validator - Help and Usage Guidelines</a>
             </div>
 
-            {/*<div className={"issue-description"}>*/}
-            {/*    <div className={"text-left"}>*/}
-            {/*        <div className={"font-weight-bold"}>Issue: {currentIssue + 1} [{start}-{end}]:</div>*/}
-            {/*        <div>{issueType.description}</div>*/}
-            {/*    </div>*/}
-            {/*    <div className={"example"}>*/}
-            {/*        <div>*/}
-            {/*            <div>Before:</div>*/}
-            {/*            <div>{issueType.example.before}</div>*/}
-            {/*        </div>*/}
-            {/*        <div>*/}
-            {/*            <div>After:</div>*/}
-            {/*            <div>{issueType.example.after}</div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+
+            <div className={"issue-description card card-body mb-2"}>
+                <div className={"text-left"}>
+                    <div className={"font-weight-bold"}>Issue: {currentIssue + 1} [{start}-{end}]:</div>
+                    <div>{issueType.description}</div>
+                </div>
+                <div className={"example"}>
+                    <div>
+                        <div>Before:</div>
+                        <div>{issueType.example.before}</div>
+                    </div>
+                    <div>
+                        <div>&nbsp;</div>
+                        <i className={"fas fa-arrow-right"}></i>
+                    </div>
+                    <div>
+                        <div>After:</div>
+                        <div>{issueType.example.after}</div>
+                    </div>
+                </div>
+            </div>
 
             <div>
                 <textarea ref={textInput} rows={12} className={"form-control"} defaultValue={report.content}></textarea>
             </div>
             <div className={"issue-nav"}>
-                <div>Total comments: {report.comments.length}</div>
+                <div>Total issues: {report.issues.length}</div>
 
                 <div>
                     <button onClick={
@@ -185,12 +195,15 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                     }>Previous</button>
                     <button onClick={
                         () => {
-                            if (report.comments && currentIssue < report.comments.length - 1) {
+                            if (report.issues && currentIssue < report.issues.length - 1) {
                                 setCurrentIssue(currentIssue + 1);
                             }
                         }
                     }>Next</button>
                 </div>
+            </div>
+            <div className={"alert alert-warning"}>
+                <div>New LaTeX scanner is a work in progress. Updates will be steadily rolled out.</div>
             </div>
         </div>
     );

@@ -3,6 +3,9 @@ import {Accept, useDropzone} from 'react-dropzone'
 import axios from 'axios';
 import './Upload.css';
 import {Report} from "./App";
+import mixpanel from 'mixpanel-browser';
+
+mixpanel.init('a246ec96c93c521c41ab10056a8555bb');
 
 type Conference = {
     id: number,
@@ -115,9 +118,17 @@ const Upload: React.FC<UploadProps> = (props) => {
                     if (response.data.error !== undefined) {
                         setUpload("error");
                         setError(response.data.error)
+                        mixpanel.track('Upload Failure', {
+                            'distinct_id': acceptedFiles[0].name,
+                            'error': response.data.error
+                        });
                     } else {
                         setUpload("success");
                         props.setReport({ type: "word", report: response.data});
+                        mixpanel.track('Upload Success', {
+                            'distinct_id': acceptedFiles[0].name,
+                            ...response.data.scores
+                        });
                         console.log(response.data);
                     }
                 } else {
@@ -126,9 +137,18 @@ const Upload: React.FC<UploadProps> = (props) => {
                     if (response.data.error !== undefined) {
                         setUpload("error");
                         setError(response.data.error)
+                        mixpanel.track('Upload Failure', {
+                            'distinct_id': acceptedFiles[0].name,
+                            'issues': response.data.error
+                        });
                     } else {
                         setUpload("success");
                         props.setReport({ type: "latex", report: {...response.data, content: content }});
+                        console.log(response.data);
+                        mixpanel.track('Upload Success', {
+                            'distinct_id': acceptedFiles[0].name,
+                            'issues': response.data.issues?.length ?? 0
+                        });
                         console.log(response.data);
                     }
                 }
@@ -136,6 +156,12 @@ const Upload: React.FC<UploadProps> = (props) => {
         } catch (e: any) {
             setError(`An unknown error occurred: ${e}`);
             setUpload("error");
+            mixpanel.track('Upload Failure', {
+                'conference': selectedConference,
+                'distinct_id': acceptedFiles[0].name,
+                'size': acceptedFiles[0].size,
+                'error': `An unknown error occurred: ${e}`
+            });
         }
     };
 
