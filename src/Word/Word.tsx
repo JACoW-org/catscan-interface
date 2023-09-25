@@ -53,6 +53,11 @@ const Word: React.FC<ReportProps> = (props) => {
                     const warningCount = section[1][1]
                     const errorCount = section[1][2]
                     const total = successCount + warningCount + errorCount
+
+                    if (total === 0) {
+                        return null;
+                    }
+
                     const successPercent = Math.round((successCount / total) * 100);
                     const warningPercent = Math.round((warningCount / total) * 100);
                     const errorPercent = Math.round((errorCount / total) * 100);

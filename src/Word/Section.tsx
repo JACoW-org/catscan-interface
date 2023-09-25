@@ -103,7 +103,7 @@ const Section: React.FC<SectionProps> = (props) => {
                          title={props.title}/>}
 
             {props.rules && (props.details.length === 0) && <div>
-                <div className="{jacow-not-found">
+                <div className="jacow-not-found">
                     No {props.title} found. Please check formatting if there should be some.
                 </div>
             </div>}

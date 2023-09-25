@@ -115,7 +115,7 @@ const LaTeX: React.FC<ReportProps> = (props) => {
     const issueContent = report.content.substring(issue.location.start, issue.location.end);
     console.log(issueContent);
 
-    const contentWithoutNewlines = report.content.replace(/\r/g, ' ');
+    const contentWithoutNewlines = report.content.replace(/\r/g, ' ').replace(/\n/g, ' ');
     return (
         <div>
             {report.filename &&
