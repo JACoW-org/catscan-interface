@@ -76,40 +76,6 @@ const issueTypes: { [key: string]: IssueType } = {
     }
 }
 
-function encode_utf8( s: string )
-{
-    return unescape( encodeURIComponent( s ) );
-}
-
-
-function setCursorPosition(inputElement: any, startInBytes: number, endInBytes: number) {
-    let startSelection = 0;
-    let newLines = 0;
-    for (let bytePos = 0; bytePos < startInBytes; startSelection++) {
-        let ch = inputElement.value.charCodeAt(startSelection);
-        if (ch < 128) {
-            bytePos++;
-            if (ch === '\n'.charCodeAt(0) || ch === '\r'.charCodeAt(0)) {
-                newLines++;
-            }
-        } else {
-            bytePos += encode_utf8(inputElement.value[startSelection]).length;
-        }
-    }
-    startSelection -= newLines;
-    // let endSelection = startSelection;
-    // for (let bytePos = startSelection; bytePos < endInBytes; endSelection++) {
-    //     let ch = inputElement.value.charCodeAt(endSelection);
-    //     if (ch < 128) {
-    //         bytePos++;
-    //     } else {
-    //         bytePos += encode_utf8(inputElement.value[endSelection]).length;
-    //     }
-    // }
-    inputElement.setSelectionRange(startSelection, startSelection+(endInBytes-startInBytes));
-}
-
-
 const LaTeX: React.FC<ReportProps> = (props) => {
     const report = props.report;
     const [currentIssue, setCurrentIssue] = React.useState(0);
@@ -122,8 +88,7 @@ const LaTeX: React.FC<ReportProps> = (props) => {
             if (textInput.current) {
                 textInput.current.blur();
                 textInput.current.focus();
-                setCursorPosition(textInput.current, start, end);
-                //textInput.current.setSelectionRange(start, end);
+                textInput.current.setSelectionRange(start, end);
             }
         }
     }, [currentIssue]);
@@ -147,6 +112,10 @@ const LaTeX: React.FC<ReportProps> = (props) => {
     const issue = report.issues[currentIssue];
     const issueType = issueTypes[issue.type];
 
+    const issueContent = report.content.substring(issue.location.start, issue.location.end);
+    console.log(issueContent);
+
+    const contentWithoutNewlines = report.content.replace(/\r/g, ' ');
     return (
         <div>
             {report.filename &&
@@ -180,23 +149,27 @@ const LaTeX: React.FC<ReportProps> = (props) => {
             </div>
 
             <div>
-                <textarea ref={textInput} rows={12} className={"form-control"} defaultValue={report.content}></textarea>
+                <textarea ref={textInput} rows={12} className={"form-control"} defaultValue={contentWithoutNewlines}></textarea>
             </div>
             <div className={"issue-nav"}>
                 <div>Total issues: {report.issues.length}</div>
 
                 <div>
                     <button onClick={
-                        () => {
+                        (e) => {
                             if (currentIssue > 0) {
                                 setCurrentIssue(currentIssue - 1);
+                            } else {
+                                setCurrentIssue(0)
                             }
                         }
                     }>Previous</button>
                     <button onClick={
-                        () => {
+                        (e) => {
                             if (report.issues && currentIssue < report.issues.length - 1) {
                                 setCurrentIssue(currentIssue + 1);
+                            } else {
+                                setCurrentIssue(0)
                             }
                         }
                     }>Next</button>
