@@ -4,7 +4,7 @@ import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 
 type TableMultiProps = {
-    data: { [key: string]: Detail}[]
+    data: { [key: string]: Detail }[][]
     columns?: string[]
     headers?: string
     args: SectionArgs
@@ -16,12 +16,15 @@ const TableMulti: React.FC<TableMultiProps> = (props) => {
     return (
         <div className={"full-width-table "}>
             <table className="table table-bordered">
-                <TableHeader rules={props.rules} headers={props.headers} />
+                <TableHeader rules={props.rules} headers={props.headers}/>
                 <tbody>
-                {props.data.map((row) => {
-                    return <>{props.data.map((r, index) => {
-                        return <TableRow id={index+1} data={r} columns={props.columns} args={props.args} rules={props.rules}/>
-                    })}</>
+                {props.data.map((r) => {
+                    return <>
+                        {r.map((row, index) => {
+                            return <TableRow key={index} id={index + 1} data={row} columns={props.columns}
+                                             args={props.args} rules={props.rules}/>
+                        })}
+                    </>
                 })}
                 </tbody>
             </table>

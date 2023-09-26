@@ -7,7 +7,7 @@ type ExtraInfoProps = {
     extra_info: string | ExtraInfoType
     title: string
     show_total: boolean
-    details: { [key: string]: Detail}[]
+    details: any
     ok: OkType,
     args: SectionArgs
 }

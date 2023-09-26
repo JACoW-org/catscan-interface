@@ -7,7 +7,7 @@ type DetailsProps = {
     ok: OkType
     title: string
     args: SectionArgs
-    details: { [key: string]: Detail}[]
+    details: any
     rules: { [key: string]: Rule; }
 }
 const Details: React.FC<DetailsProps> = (props) => {
