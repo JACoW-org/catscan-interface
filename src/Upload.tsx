@@ -129,7 +129,6 @@ const Upload: React.FC<UploadProps> = (props) => {
                             'distinct_id': acceptedFiles[0].name,
                             ...response.data.scores
                         });
-                        console.log(response.data);
                     }
                 } else {
                     const content = await acceptedFiles[0].text()
@@ -143,13 +142,11 @@ const Upload: React.FC<UploadProps> = (props) => {
                         });
                     } else {
                         setUpload("success");
-                        props.setReport({ type: "latex", report: {...response.data, content: content }});
-                        console.log(response.data);
+                        props.setReport({ type: "latex", report: response.data });
                         mixpanel.track('Upload Success', {
                             'distinct_id': acceptedFiles[0].name,
                             'issues': response.data.issues?.length ?? 0
                         });
-                        console.log(response.data);
                     }
                 }
             }
