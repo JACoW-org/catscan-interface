@@ -1,4 +1,4 @@
-import React, {RefObject, useLayoutEffect, useRef} from "react";
+import React, {ReactChild, RefObject, useEffect, useLayoutEffect, useRef} from "react";
 import './Report.css';
 
 type Location = {
@@ -76,22 +76,53 @@ const issueTypes: { [key: string]: IssueType } = {
     }
 }
 
+function LaTeXEditor({ report, issueRender }: {
+    report: LaTeXReport;
+    issueRender: (id: string, content: string) => React.JSX.Element;
+}) {
+    const content = report.content;
+    const issues = report.issues?.sort((a: Issue, b: Issue) => a.location.start - b.location.start);
+
+    if (!issues) {
+        return <>{content}</>;
+    }
+
+
+    let out: (JSX.Element | Element)[] = [];
+    let currStart = 0;
+    for (let i = 0; i < issues.length; i++) {
+        const issue = issues[i];
+        const start = issue.location.start;
+        const end = issue.location.end;
+        const id = `issue-${i}`;
+        if (currStart < start) {
+            out.push(<>{content.substring(currStart, start)}</>);
+        }
+        out.push(issueRender(id, content.substring(start, end)));
+        currStart = end;
+    }
+    if (currStart < content.length) {
+        out.push(<>{content.substring(currStart)}</>);
+    }
+    return <>
+        {out.map((child) => child)}
+    </>;
+}
+
+
 const LaTeX: React.FC<ReportProps> = (props) => {
     const report = props.report;
     const [currentIssue, setCurrentIssue] = React.useState(0);
-    const textInput = useRef(null as any);
-    const start = report.issues ? report.issues[currentIssue].location.start : 0;
-    const end = report.issues ? report.issues[currentIssue].location.end : 0;
 
     useLayoutEffect(() => {
-        if (report.issues) {
-            if (textInput.current) {
-                textInput.current.blur();
-                textInput.current.focus();
-                textInput.current.setSelectionRange(start, end);
-            }
+        const element = document.getElementById("issue-" + currentIssue);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
         }
     }, [currentIssue]);
+
+    const start = report.issues ? report.issues[currentIssue].location.start : 0;
+    const end = report.issues ? report.issues[currentIssue].location.end : 0;
 
     if (!report.issues) {
         return (
@@ -112,10 +143,6 @@ const LaTeX: React.FC<ReportProps> = (props) => {
     const issue = report.issues[currentIssue];
     const issueType = issueTypes[issue.type];
 
-    const issueContent = report.content.substring(issue.location.start, issue.location.end);
-    console.log(issueContent);
-
-    const contentWithoutNewlines = report.content.replace(/\r/g, ' ').replace(/\n/g, ' ');
     return (
         <div>
             {report.filename &&
@@ -129,7 +156,7 @@ const LaTeX: React.FC<ReportProps> = (props) => {
 
             <div className={"issue-description card card-body mb-2"}>
                 <div className={"text-left"}>
-                    <div className={"font-weight-bold"}>Issue: {currentIssue + 1} [{start}-{end}]:</div>
+                    <div className={"font-weight-bold"}>Issue: {currentIssue + 1}:</div>
                     <div>{issueType.description}</div>
                 </div>
                 <div className={"example"}>
@@ -148,9 +175,6 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                 </div>
             </div>
 
-            <div>
-                <textarea ref={textInput} rows={12} className={"form-control"} defaultValue={contentWithoutNewlines}></textarea>
-            </div>
             <div className={"issue-nav"}>
                 <div>Total issues: {report.issues.length}</div>
 
@@ -163,7 +187,8 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                                 setCurrentIssue(0)
                             }
                         }
-                    }>Previous</button>
+                    }>Previous
+                    </button>
                     <button onClick={
                         (e) => {
                             if (report.issues && currentIssue < report.issues.length - 1) {
@@ -172,10 +197,19 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                                 setCurrentIssue(0)
                             }
                         }
-                    }>Next</button>
+                    }>Next
+                    </button>
                 </div>
             </div>
-            <div className={"alert alert-warning"}>
+
+            <div className={"editor"} contentEditable={true}>
+                <LaTeXEditor
+                    report={props.report}
+                    issueRender={(id: string, text: string): React.JSX.Element => (<span className={"issue"} id={id}>{text}</span>) }
+                />
+            </div>
+
+            <div className={"alert alert-warning mt-2"}>
                 <div>New LaTeX scanner is a work in progress. Updates will be steadily rolled out.</div>
             </div>
         </div>
