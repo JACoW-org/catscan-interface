@@ -13,7 +13,7 @@ type Conference = {
 }
 
 type Upload = "idle" | "uploading" | "processing" | "success" | "error";
-const baseUrl = "https://scan-api.jacow.org";
+const baseUrl = "https://scan-api.jacow.org/catscan";
 const onlyDocx: Accept = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     "application/x-tex": [".tex"]
