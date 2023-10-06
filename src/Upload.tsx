@@ -13,8 +13,7 @@ type Conference = {
 }
 
 type Upload = "idle" | "uploading" | "processing" | "success" | "error";
-const baseUrl = "https://catscan-checker-fe4ty.ondigitalocean.app/catscan";
-const latexUrl = "https://faas-syd1-c274eac6.doserverless.co/api/v1/web/fn-19977d5d-a466-4a2d-bfd5-e29ba32197eb/catscan/latex"
+const baseUrl = "https://scan-api.jacow.org";
 const onlyDocx: Accept = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     "application/x-tex": [".tex"]
@@ -82,7 +81,7 @@ const Upload: React.FC<UploadProps> = (props) => {
                     setProgress(Math.round(progressEvent.progress * 100));
                 }
             },
-            url: latexUrl,
+            url: baseUrl + "/latex",
             method: 'POST',
             data: {
                 filename: acceptedFiles[0].name,

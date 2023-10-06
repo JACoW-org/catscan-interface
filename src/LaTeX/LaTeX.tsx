@@ -12,18 +12,15 @@ type Issue = {
 };
 
 type BibItem = {
-    name: string,
     ref: string,
     location: Location
 }
 
 type LaTeXReport = {
-    document: { location: Location },
-    comments: { location: Location }[],
     filename: string,
-    issues?: Issue[]
     content: string,
-    bibItems: BibItem[]
+    issues?: Issue[]
+    bibItems?: BibItem[]
 };
 
 type ReportProps = {
@@ -44,6 +41,13 @@ const issueTypes: { [key: string]: IssueType } = {
         example: {
             before: 'doi:10.18429/JACoW-IPAC2023-XXXX',
             after: '\\url{doi:10.18429/JACoW-IPAC2023-XXXX}'
+        }
+    },
+    'ET_AL_WITH_COMMA': {
+        description: 'et al. with comma.',
+        example: {
+            before: 'P. Person, \\textit{et al.}',
+            after: 'P. Person \\textit{et al.}'
         }
     },
     'ET_AL_NOT_WRAPPED': {
@@ -120,9 +124,6 @@ const LaTeX: React.FC<ReportProps> = (props) => {
             element.scrollIntoView({ behavior: 'smooth' });
         }
     }, [currentIssue]);
-
-    const start = report.issues ? report.issues[currentIssue].location.start : 0;
-    const end = report.issues ? report.issues[currentIssue].location.end : 0;
 
     if (!report.issues) {
         return (
