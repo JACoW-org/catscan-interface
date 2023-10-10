@@ -107,13 +107,17 @@ const Upload: React.FC<UploadProps> = (props) => {
         });
     }
     const submitForm = async () => {
+        let processingStage = "";
         try {
             if (acceptedFiles.length > 0) {
                 setUpload("uploading");
                 if (acceptedFiles[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                    processingStage = "word-uploading";
                     await uploadWord()
+                    processingStage = "word-processing";
                     setUpload("processing");
-                    const response = await processPaper()
+                    const response = await processPaper();
+                    processingStage = "word-parsing";
                     if (response.data.error !== undefined) {
                         setUpload("error");
                         setError(response.data.error)
@@ -131,7 +135,9 @@ const Upload: React.FC<UploadProps> = (props) => {
                     }
                 } else {
                     const content = await acceptedFiles[0].text()
+                    processingStage = "latex-uploading";
                     const response = await uploadLaTeX(content)
+                    processingStage = "latex-processing";
                     if (response.data.error !== undefined) {
                         setUpload("error");
                         setError(response.data.error)
@@ -153,6 +159,7 @@ const Upload: React.FC<UploadProps> = (props) => {
             setError(`An unknown error occurred: ${e}`);
             setUpload("error");
             mixpanel.track('Upload Failure', {
+                'stage': processingStage,
                 'conference': selectedConference,
                 'distinct_id': acceptedFiles[0].name,
                 'size': acceptedFiles[0].size,
