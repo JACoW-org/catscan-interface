@@ -4,6 +4,7 @@ import axios from 'axios';
 import './Upload.css';
 import {Report} from "./App";
 import mixpanel from 'mixpanel-browser';
+import {useSearchParams} from "react-router-dom";
 
 mixpanel.init('a246ec96c93c521c41ab10056a8555bb');
 
@@ -24,6 +25,7 @@ type UploadProps = {
 }
 
 const Upload: React.FC<UploadProps> = (props) => {
+    let [searchParams, setSearchParams] = useSearchParams();
     const [conferences, setConferences] =
         React.useState([] as Conference[]);
     const [selectedConference, setSelectedConference] = React.useState(0);
@@ -34,6 +36,43 @@ const Upload: React.FC<UploadProps> = (props) => {
         accept: onlyDocx,
         multiple: false,
     };
+
+    React.useEffect(() => {
+        if (searchParams.get("conference") && searchParams.has("contribution") && searchParams.has("revision")) {
+            const conference = parseInt(searchParams.get("conference") as string);
+            const contribution = parseInt(searchParams.get("contribution") as string);
+            const revision = parseInt(searchParams.get("revision") as string);
+            setUpload("processing");
+            axios({
+                url: baseUrl + "/word",
+                method: 'POST',
+                data: {
+                    conference: conference,
+                    contribution: contribution,
+                    revision: revision,
+                },
+                headers: {
+                    'Content-Type': "application/json"
+                }
+            }).then((response) => {
+                if (response.data.error !== undefined) {
+                    setUpload("error");
+                    setError(response.data.error)
+                    mixpanel.track('Upload Failure', {
+                        'distinct_id': acceptedFiles[0].name,
+                        'error': response.data.error
+                    });
+                } else {
+                    setUpload("success");
+                    props.setReport({type: "word", report: response.data});
+                    mixpanel.track('Upload Success', {
+                        'distinct_id': acceptedFiles[0].name,
+                        ...response.data.scores
+                    });
+                }
+            });
+        }
+    }, [searchParams]);
 
     const restart = () => {
         setProgress(0);
@@ -127,7 +166,7 @@ const Upload: React.FC<UploadProps> = (props) => {
                         });
                     } else {
                         setUpload("success");
-                        props.setReport({ type: "word", report: response.data});
+                        props.setReport({type: "word", report: response.data});
                         mixpanel.track('Upload Success', {
                             'distinct_id': acceptedFiles[0].name,
                             ...response.data.scores
@@ -147,7 +186,7 @@ const Upload: React.FC<UploadProps> = (props) => {
                         });
                     } else {
                         setUpload("success");
-                        props.setReport({ type: "latex", report: response.data });
+                        props.setReport({type: "latex", report: response.data});
                         mixpanel.track('Upload Success', {
                             'distinct_id': acceptedFiles[0].name,
                             'issues': response.data.issues?.length ?? 0
@@ -207,12 +246,12 @@ const Upload: React.FC<UploadProps> = (props) => {
                                 {acceptedFiles.length > 0 &&
                                     <div>
                                         {acceptedFiles[0].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ?
-                                        <div className={"pb-2"}>
-                                            <i className="fas fa-4x fa-file-word"></i>
-                                        </div>:
-                                        <div className={"pb-2"}>
-                                            <i className="fas fa-4x fa-file-code"></i>
-                                        </div>}
+                                            <div className={"pb-2"}>
+                                                <i className="fas fa-4x fa-file-word"></i>
+                                            </div> :
+                                            <div className={"pb-2"}>
+                                                <i className="fas fa-4x fa-file-code"></i>
+                                            </div>}
                                         <div>{acceptedFiles[0].name}</div>
                                         <div className={"small"}>
                                             {(acceptedFiles[0].size / 1024 / 1024).toFixed(2)} mb
