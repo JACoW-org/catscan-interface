@@ -38,18 +38,13 @@ const Upload: React.FC<UploadProps> = (props) => {
     };
 
     React.useEffect(() => {
-        if (searchParams.get("conference") && searchParams.has("contribution") && searchParams.has("revision")) {
-            const conference = parseInt(searchParams.get("conference") as string);
-            const contribution = parseInt(searchParams.get("contribution") as string);
-            const revision = parseInt(searchParams.get("revision") as string);
+        if (searchParams.get("results")) {
             setUpload("processing");
             axios({
                 url: baseUrl + "/word",
                 method: 'POST',
                 data: {
-                    conference: conference,
-                    contribution: contribution,
-                    revision: revision,
+                    results: searchParams.get("results")
                 },
                 headers: {
                     'Content-Type': "application/json"
@@ -58,18 +53,21 @@ const Upload: React.FC<UploadProps> = (props) => {
                 if (response.data.error !== undefined) {
                     setUpload("error");
                     setError(response.data.error)
-                    mixpanel.track('Upload Failure', {
-                        'distinct_id': acceptedFiles[0].name,
+                    mixpanel.track('Retrieval Failure', {
+                        'distinct_id': searchParams.get("results"),
                         'error': response.data.error
                     });
                 } else {
                     setUpload("success");
                     props.setReport({type: "word", report: response.data});
-                    mixpanel.track('Upload Success', {
-                        'distinct_id': acceptedFiles[0].name,
+                    mixpanel.track('Retrieval Success', {
+                        'distinct_id': searchParams.get("results"),
                         ...response.data.scores
                     });
                 }
+            }).catch(() => {
+                setUpload("error")
+                setError("Unable to retrieve results")
             });
         }
     }, [searchParams]);
