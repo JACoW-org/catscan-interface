@@ -36,17 +36,16 @@ const LaTeX: React.FC<ReportProps> = (props) => {
                     </React.Fragment>
                 ))}
                 <p>
-                    JACoW Resources:
-                    <a href={"https://www.jacow.org/Authors/FormattingCitations"} target={"_blank"}> Formatting
-                        Citations</a>
+                    <a href={"https://scan.jacow.org/"}>Re-check your paper @ CatScan</a>
+                    &nbsp;|&nbsp;
+                    <a href={"https://www.jacow.org/Authors/FormattingCitations"} target={"_blank"}> Citation Guidelines</a>
                     &nbsp;|&nbsp;
                     <a href={"https://refs.jacow.org/"} target={"_blank"}>Reference Search</a>
                 </p>
 
                 {props.report.isAbbreviated && <div>
                     <p>
-                        CatScan has detected {props.report.issuesFound} issues in your paper. These issues were summarized in the text above.</p>
-
+                        CatScan has detected <strong>{props.report.issuesFound} issues</strong> in your paper. These issues were summarized in the text above.</p>
                     <p>
                         <a data-toggle="collapse" href="#expandableContent" role="button" aria-expanded="false" aria-controls="expandableContent">
                             See unabbreviated issues
