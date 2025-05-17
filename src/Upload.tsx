@@ -14,6 +14,7 @@ type Conference = {
 }
 
 type Upload = "idle" | "uploading" | "processing" | "success" | "error";
+const latexUrl = "https://catscan-latex-ng5iw.ondigitalocean.app/";
 const baseUrl = "https://scan-api.jacow.org/catscan";
 const onlyDocx: Accept = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
@@ -118,7 +119,7 @@ const Upload: React.FC<UploadProps> = (props) => {
                     setProgress(Math.round(progressEvent.progress * 100));
                 }
             },
-            url: baseUrl + "/latex",
+            url: latexUrl,
             method: 'POST',
             data: {
                 filename: acceptedFiles[0].name,
@@ -126,7 +127,7 @@ const Upload: React.FC<UploadProps> = (props) => {
             },
             headers: {
                 'Content-Type': "application/json"
-            }
+            },
         });
     }
 
@@ -174,22 +175,49 @@ const Upload: React.FC<UploadProps> = (props) => {
                     const content = await acceptedFiles[0].text()
                     processingStage = "latex-uploading";
                     const response = await uploadLaTeX(content)
+
                     processingStage = "latex-processing";
-                    if (response.data.error !== undefined) {
+
+                    // if response status code is not 200
+                    if (response.status !== 200) {
                         setUpload("error");
-                        setError(response.data.error)
+                        setError(response.data)
                         mixpanel.track('Upload Failure', {
                             'distinct_id': acceptedFiles[0].name,
-                            'issues': response.data.error
+                            'error': response.data.error
                         });
                     } else {
                         setUpload("success");
-                        props.setReport({type: "latex", report: response.data});
+                        props.setReport({
+                            type: "latex", report: {
+                                filename: acceptedFiles[0].name,
+                                content: response.data.body,
+                                isAbbreviated: response.data.isabbreviated,
+                                unabbreviated: response.data.unabbreviated,
+                                issuesFound: response.data.issuesFound,
+                            }
+                        });
                         mixpanel.track('Upload Success', {
                             'distinct_id': acceptedFiles[0].name,
-                            'issues': response.data.issues?.length ?? 0
+                            'response': response.data.body,
                         });
                     }
+
+                    // if (response.ok) {
+                    //     setUpload("error");
+                    //     setError(response.data)
+                    //     mixpanel.track('Upload Failure', {
+                    //         'distinct_id': acceptedFiles[0].name,
+                    //         'issues': response.data.error
+                    //     });
+                    // } else {
+                    //     setUpload("success");
+                    //     props.setReport({type: "latex", report: response.data});
+                    //     mixpanel.track('Upload Success', {
+                    //         'distinct_id': acceptedFiles[0].name,
+                    //         'issues': response.data.issues?.length ?? 0
+                    //     });
+                    // }
                 }
             }
         } catch (e: any) {
